@@ -1,0 +1,15 @@
+{
+  "type": "code",
+  "modid": "dumbwaiter",
+  "name": "Dumbwaiter",
+  "authors": ["Feyd"],
+  "iconPath": "modicon.png",
+  "description": "Medieval-style dumbwaiter lift. Move between vertically-separated stations via an immersive transition (sound, fade, teleport).",
+  "version": "0.1.0",
+  "side": "Universal",
+  "requiredOnClient": true,
+  "requiredOnServer": true,
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

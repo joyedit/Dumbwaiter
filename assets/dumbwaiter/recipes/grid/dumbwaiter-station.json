@@ -1,0 +1,11 @@
+{
+  "ingredientPattern": "P_P,NSN,P_P",
+  "ingredients": {
+    "P": { "type": "item", "code": "game:plank-*", "quantity": 2 },
+    "N": { "type": "item", "code": "game:metalnailsandstrips-*", "quantity": 2 },
+    "S": { "type": "block", "code": "game:plankslab-*", "quantity": 1 }
+  },
+  "width": 3,
+  "height": 3,
+  "output": { "type": "block", "code": "dumbwaiter:dumbwaiterstation-oak-north", "quantity": 1 }
+}

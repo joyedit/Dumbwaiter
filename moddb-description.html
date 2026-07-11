@@ -1,0 +1,54 @@
+<h2>Dumbwaiter</h2>
+
+<p><strong>A medieval-style lift for moving between vertically-separated floors.</strong> Step onto a station, pull the lever, and ride a brief, atmospheric transition &mdash; chain rattle, pulley squeal, wood groan, and a fade &mdash; to its paired station above or below. Perfect for cliff-side bases, multi-floor towers, mineshafts, and deep cellars.</p>
+
+<h3>How it works</h3>
+<p>Place a <strong>Dumbwaiter Station</strong> at each end of your shaft, link them with a <strong>Rope Link</strong>, and you have a working lift. Activating one station whisks you to the other through a short immersive sequence whose length scales with the distance traveled.</p>
+
+<h3>Crafting</h3>
+
+<p><strong>Dumbwaiter Station</strong> (3&times;3 grid) &mdash; craft <strong>two</strong>, one for each end:</p>
+<pre>
+[Board] [      ] [Board]
+[Nails] [ Slab ] [Nails]
+[Board] [      ] [Board]
+</pre>
+<ul>
+  <li><strong>Board</strong> (any wood) &times;2 per corner &mdash; 8 total</li>
+  <li><strong>Metal nails &amp; strips</strong> (any metal) &times;2 each &mdash; 4 total</li>
+  <li><strong>Plank slab</strong> (any wood) &times;1 in the center</li>
+</ul>
+
+<p><strong>Dumbwaiter Rope Link</strong> (1&times;2 grid) &mdash; the pairing tool:</p>
+<pre>
+[ Rusty Gear x2 ]
+[   Rope x12    ]
+</pre>
+<p>Consumed when a link is successfully made.</p>
+
+<h3>Linking two stations</h3>
+<ol>
+  <li>Place one station at the bottom of your shaft, one at the top.</li>
+  <li>Right-click the <strong>first</strong> station with the Rope Link &rarr; <em>"Dumbwaiter anchor set."</em></li>
+  <li>Right-click the <strong>second</strong> station with the Rope Link &rarr; <em>"Dumbwaiter linked! Distance: N blocks."</em></li>
+</ol>
+<p>Both ends now remember each other, and the link item is consumed.</p>
+
+<h3>Limits &amp; behavior</h3>
+<ul>
+  <li><strong>Max vertical distance:</strong> 192 blocks</li>
+  <li><strong>Max horizontal offset:</strong> 4 blocks (allows slightly angled shafts)</li>
+  <li><strong>Transition time:</strong> ~1&ndash;3 seconds, scaling with trip distance</li>
+  <li><strong>Cooldown after arrival:</strong> ~0.5&ndash;2 seconds, scaling with trip distance</li>
+  <li>The destination must be <strong>loaded and unobstructed</strong> &mdash; the lift will not drop you into a wall.</li>
+  <li>One rider at a time per station (prevents double-activation).</li>
+</ul>
+
+<h3>Configurable</h3>
+<p>A <code>dumbwaiter.json</code> config file (auto-generated in <code>ModConfig</code>) lets you tune max distance, horizontal offset, transition and cooldown timing, sound volume, and an optional toggle for the screen-fade effect.</p>
+
+<h3>Compatibility</h3>
+<ul>
+  <li>Built for <strong>Vintage Story 1.22+</strong></li>
+  <li>Universal (required on client and server); safe for multiplayer.</li>
+</ul>

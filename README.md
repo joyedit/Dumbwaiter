@@ -6,7 +6,7 @@ The mechanic is a **teleport disguised as a lift** — a detailed block model, s
 
 ## Features
 
-- **Dumbwaiter Station** block (Oak and Aged variants) with a 27-element model and custom textures
+- **Dumbwaiter Station** block with a 27-element model and custom textures
 - **Dumbwaiter Rope Link** item for pairing two stations
 - Distance-scaled transition: short hops are quick, long hauls take the full ride
 - Writable **station labels** (ink & quill or charcoal), shown emphasized in the block info overlay along with link direction and distance
@@ -15,7 +15,7 @@ The mechanic is a **teleport disguised as a lift** — a detailed block model, s
 
 ## Using in-game
 
-1. **Craft two stations** (3×3): 4× any planks in the corners (2 each), 2× metal nails & strips on the left/right middle, 1× plank slab in the center. (The Aged variant is currently creative-only.)
+1. **Craft two stations** (3×3): 4× any planks in the corners (2 each), 2× metal nails & strips on the left/right middle, 1× plank slab in the center.
 2. **Place them** at the two ends of your shaft — up to 192 blocks vertical, 4 blocks horizontal offset (configurable). Keep the column between them clear.
 3. **Craft a Dumbwaiter Rope Link** (1×2 vertical): 2× rusty gear over 12× rope.
 4. Right-click the first station with the link — *anchor set* (the anchor coordinates show in the item tooltip). Right-click the second — *linked*. The link is consumed.

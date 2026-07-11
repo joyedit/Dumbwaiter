@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 — 2026-07-11
+
+First version published to the mod DB.
+
+- Removed the unfinished Aged station variant (it had no recipe and shared the oak model). The Oak station's block codes are unchanged, so existing placements are unaffected.
+
 ## 0.1.0 — 2026-07-11
 
 Initial release.

@@ -1,0 +1,10 @@
+{
+  "ingredientPattern": "G,R",
+  "ingredients": {
+    "G": { "type": "item", "code": "game:gear-rusty", "quantity": 2 },
+    "R": { "type": "item", "code": "game:rope", "quantity": 12 }
+  },
+  "width": 1,
+  "height": 2,
+  "output": { "type": "item", "code": "dumbwaiter:dumbwaiter-linker", "quantity": 1 }
+}

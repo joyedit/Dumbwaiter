@@ -1,0 +1,10 @@
+{
+  "code": "dumbwaiter-linker",
+  "class": "ItemDumbwaiterLinker",
+  "creativeinventory": { "general": ["*"] },
+  "shape": { "base": "item/dumbwaiter-linker" },
+  "textures": {
+    "0": { "base": "item/linker-rings" }
+  },
+  "maxstacksize": 16
+}

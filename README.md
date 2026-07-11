@@ -1,26 +1,45 @@
 # Dumbwaiter
 
-A Vintage Story 1.22+ mod adding a medieval-style dumbwaiter lift. Step onto a wooden platform, pull the lever, and a brief immersive transition (sound, screen fade, server-side teleport) drops you at the paired station — typically at the top or bottom of a shaft.
+A Vintage Story 1.22+ mod adding a medieval-style dumbwaiter lift. Step onto the platform, pull the lever, and a brief immersive transition (sound, screen fade, server-side teleport) drops you at the paired station — typically at the top or bottom of a shaft.
 
-The mechanic is a **teleport disguised as a lift** — detailed block models, layered sound design, and a fade transition carry the illusion that the platform actually moves.
+The mechanic is a **teleport disguised as a lift** — a detailed block model, sound, and a fade transition carry the illusion that the platform actually moves.
 
-## Status — early development
+## Features
 
-| Component | State |
-| --- | --- |
-| Station block: JSON + 27-element shape + 8 placeholder textures | renders in-world |
-| `ModSystem` entry, block + block-entity class registration | done |
-| `BlockEntityDumbwaiterStation` (paired pos, role, in-use, last-used) | data model only, no behavior |
-| `BlockDumbwaiterStation.OnBlockInteractStart` | stub (no lever logic) |
-| `ItemDumbwaiterLinker` (rope-coil pairing item) | C# stub — no JSON, texture, or recipe |
-| `LiftTransition` client renderer + sound timeline | stub (no fade, no audio) |
-| Network packets (begin → ready → teleport → arrive) | not implemented |
-| Sound files (`lever-pull.ogg`, `pulley-loop.ogg`, …) | not authored |
-| Recipes (station, linker, shaft, winch) | not authored |
-| `dumbwaiter-shaft`, `dumbwaiter-winch` decorative blocks | not started |
-| `DumbwaiterConfig` | loaded from `ModConfig/dumbwaiter.json` |
+- **Dumbwaiter Station** block (Oak and Aged variants) with a 27-element model and custom textures
+- **Dumbwaiter Rope Link** item for pairing two stations
+- Distance-scaled transition: short hops are quick, long hauls take the full ride
+- Writable **station labels** (ink & quill or charcoal), shown emphasized in the block info overlay along with link direction and distance
+- Safety checks: shaft obstruction scan, destination clearance, in-use lockout, settling cooldown, must-be-standing-on-platform check
+- Fully configurable via `ModConfig/dumbwaiter.json`
 
-Full spec — including planned interaction flow, sound timeline, model element list, and network protocol — lives in [`DESIGN.md`](DESIGN.md).
+## Using in-game
+
+1. **Craft two stations** (3×3): 4× any planks in the corners (2 each), 2× metal nails & strips on the left/right middle, 1× plank slab in the center. (The Aged variant is currently creative-only.)
+2. **Place them** at the two ends of your shaft — up to 192 blocks vertical, 4 blocks horizontal offset (configurable). Keep the column between them clear.
+3. **Craft a Dumbwaiter Rope Link** (1×2 vertical): 2× rusty gear over 12× rope.
+4. Right-click the first station with the link — *anchor set* (the anchor coordinates show in the item tooltip). Right-click the second — *linked*. The link is consumed.
+5. **Ride it:** stand on a station and right-click. After a fade-and-sound transition scaled to the distance, you arrive at the other end. Each end then needs a moment to settle before the next trip.
+6. **Label it (optional):** sneak + right-click a station while holding an ink & quill (reusable) or charcoal (consumed, with an 85% return chance on save — same economy as vanilla labeled chests). The label appears bold in the block info overlay, and the paired station shows it by name.
+
+If something's wrong — station unlinked, shaft walled off, destination blocked, platform still settling — you get a chat message explaining what.
+
+## Configuration
+
+On first run, `~/.config/VintagestoryData/ModConfig/dumbwaiter.json` is written with defaults:
+
+| Key | Default | Effect |
+| --- | --- | --- |
+| `MaxVerticalDistance` | 192 | Max vertical blocks between paired stations |
+| `MaxHorizontalOffset` | 4 | Max horizontal misalignment when linking |
+| `TransitionDuration` | 3.0 | Transition time (seconds) for a maximum-distance trip |
+| `MinTransitionDuration` | 1.0 | Transition floor for the shortest trips |
+| `UseCooldown` | 2.0 | Settling time (seconds) after a maximum-distance trip |
+| `MinUseCooldown` | 0.5 | Cooldown floor for the shortest trips |
+| `EnableScreenFade` | true | Set false for a faster, less immersive trip |
+| `SoundVolume` | 0.8 | 0–1 multiplier for transition audio |
+
+Transition time and cooldown both scale linearly with station distance between the min and max values.
 
 ## Building
 
@@ -31,51 +50,30 @@ dotnet build              # compiles to bin/Debug/Dumbwaiter.dll
 ./deploy.sh               # builds, zips with modinfo + assets + DLL, copies to ~/.config/VintagestoryData/Mods/
 ```
 
-## Using in-game
-
-**Right now: placement only.** In creative, search "dumbwaiter" in inventory — place an Oak or Aged Dumbwaiter Station. The block renders but the lever does nothing yet.
-
-**Planned flow** (per DESIGN.md):
-1. Place two stations, one at the top of your shaft, one at the bottom. Max 64 blocks vertical, 4 blocks horizontal offset.
-2. Craft a Dumbwaiter Rope Link (1 iron nail + 2 rope, vertical).
-3. Right-click the bottom station with the linker — *anchor set.*
-4. Right-click the top station with the linker — *linked, distance N.* Link item is consumed.
-5. Step onto either platform, right-click the lever. ~3-second transition (lever clunk → rope tension → pulley loop + screen fade → arrival thud → fade in) drops you at the paired station. 2-second cooldown.
-
 ## Project layout
 
 ```
 src/
-├── DumbwaiterMod.cs                  ModSystem entry
-├── BlockDumbwaiterStation.cs         Block class
-├── BlockEntityDumbwaiterStation.cs   BE — pairing data
-├── ItemDumbwaiterLinker.cs           Linker item (stub)
-├── LiftTransition.cs                 Client fade + sound timeline (stub)
+├── DumbwaiterMod.cs                  ModSystem entry — block/BE/item registration, network channel, config
+├── BlockDumbwaiterStation.cs         Interaction logic: operate, label, safety checks, teleport scheduling
+├── BlockEntityDumbwaiterStation.cs   Pairing data, label storage/editing, block info text
+├── ItemDumbwaiterLinker.cs           Rope link: anchor + pair flow
+├── LiftTransition.cs                 Client-side fade renderer + sound playback
+├── TransitionPacket.cs               Server → client transition trigger
 └── Config/DumbwaiterConfig.cs
 
 assets/dumbwaiter/
-├── blocktypes/dumbwaiter-station.json
-├── shapes/block/dumbwaiter-station.json
-├── textures/block/                   8 placeholder PNGs (real art TBD)
+├── blocktypes/ itemtypes/ shapes/    Station block + linker item definitions
+├── recipes/grid/                     Station and rope link recipes
+├── sounds/lift-operate.ogg
+├── textures/                         Block, item, and fade textures
 └── lang/en.json
 ```
 
-## Configuration
-
-On first run, `~/.config/VintagestoryData/ModConfig/dumbwaiter.json` is written with defaults:
-
-| Key | Default | Effect |
-| --- | --- | --- |
-| `MaxVerticalDistance` | 64 | Max blocks between paired stations |
-| `MaxHorizontalOffset` | 4 | Max horizontal misalignment when linking |
-| `TransitionDuration` | 3.0 | Total transition time, seconds |
-| `UseCooldown` | 2.0 | Seconds between uses |
-| `EnableScreenFade` | true | Set false for a faster, less immersive trip |
-| `SoundVolume` | 0.8 | 0–1 multiplier for transition audio |
-
 ## Reference
 
-- [`DESIGN.md`](DESIGN.md) — full design spec
+- [`CHANGELOG.md`](CHANGELOG.md) — release history
+- [`DESIGN.md`](DESIGN.md) — original design spec
 - [`CLAUDE.md`](CLAUDE.md) — environment + conventions for AI-assisted development on this project
 - VS API docs: <https://apidocs.vintagestory.at>
 - JSON docs: <https://apidocs.vintagestory.at/json-docs/index.html>

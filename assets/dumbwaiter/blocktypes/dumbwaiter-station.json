@@ -6,7 +6,7 @@
     "*-north": { "general": ["*"], "decorative": ["*"] }
   },
   "variantgroups": [
-    { "code": "wood", "states": ["oak", "aged"] },
+    { "code": "wood", "states": ["oak"] },
     { "code": "side", "loadFromProperties": "abstract/horizontalorientation" }
   ],
   "behaviors": [
@@ -26,12 +26,6 @@
     "stone": { "base": "block/counterweight-stone" },
     "wheel": { "base": "block/pulley-wheel" },
     "guide": { "base": "block/guide-rail" }
-  },
-  "texturesByType": {
-    "*-aged-*": {
-      "plank": { "base": "block/oak-plank-aged" },
-      "guide": { "base": "block/oak-plank-aged" }
-    }
   },
   "blockmaterial": "Wood",
   "resistance": 3.5,

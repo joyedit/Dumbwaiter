@@ -49,7 +49,8 @@ namespace Dumbwaiter
             transition?.Begin(
                 packet.DurationSeconds,
                 new Vec3f(packet.SourceX + 0.5f, packet.SourceY + 0.5f, packet.SourceZ + 0.5f),
-                packet.Volume);
+                packet.Volume,
+                packet.SuppressFade);
         }
     }
 }

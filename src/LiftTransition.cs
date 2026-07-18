@@ -31,12 +31,12 @@ namespace Dumbwaiter
             this.capi = capi;
         }
 
-        public void Begin(float durationSeconds, Vec3f soundPos, float volume)
+        public void Begin(float durationSeconds, Vec3f soundPos, float volume, bool suppressFade = false)
         {
             totalDuration = durationSeconds;
             elapsed = 0f;
             active = true;
-            fadeEnabled = DumbwaiterMod.Config?.EnableScreenFade ?? true;
+            fadeEnabled = !suppressFade && (DumbwaiterMod.Config?.EnableScreenFade ?? true);
 
             if (fadeEnabled) EnsureTexture();
 

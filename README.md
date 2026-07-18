@@ -9,6 +9,7 @@ The mechanic is a **teleport disguised as a lift** — a detailed block model, s
 - **Dumbwaiter Station** block with a 27-element model and custom textures
 - **Dumbwaiter Rope Link** item for pairing two stations
 - Distance-scaled transition: short hops are quick, long hauls take the full ride
+- **Cargo sends**: set a chest, basket or vessel on top of a station and operate it from beside the platform — the container (contents intact) is hauled to the other end
 - Writable **station labels** (ink & quill or charcoal), shown emphasized in the block info overlay along with link direction and distance
 - Safety checks: shaft obstruction scan, destination clearance, in-use lockout, settling cooldown, must-be-standing-on-platform check
 - Fully configurable via `ModConfig/dumbwaiter.json`
@@ -20,7 +21,8 @@ The mechanic is a **teleport disguised as a lift** — a detailed block model, s
 3. **Craft a Dumbwaiter Rope Link** (1×2 vertical): 2× rusty gear over 12× rope.
 4. Right-click the first station with the link — *anchor set* (the anchor coordinates show in the item tooltip). Right-click the second — *linked*. The link is consumed.
 5. **Ride it:** stand on a station and right-click. After a fade-and-sound transition scaled to the distance, you arrive at the other end. Each end then needs a moment to settle before the next trip.
-6. **Label it (optional):** sneak + right-click a station while holding an ink & quill (reusable) or charcoal (consumed, with an 85% return chance on save — same economy as vanilla labeled chests). The label appears bold in the block info overlay, and the paired station shows it by name.
+6. **Send cargo:** place a chest, basket or vessel on top of a linked station, then right-click the station while standing beside it (not on it). The usual transition sounds play and the container — contents, label and all — arrives above the other station. Trunks (too bulky) and reinforced or locked containers won't go, and the far cell must be clear.
+7. **Label it (optional):** sneak + right-click a station while holding an ink & quill (reusable) or charcoal (consumed, with an 85% return chance on save — same economy as vanilla labeled chests). The label appears bold in the block info overlay, and the paired station shows it by name.
 
 If something's wrong — station unlinked, shaft walled off, destination blocked, platform still settling — you get a chat message explaining what.
 

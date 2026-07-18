@@ -36,7 +36,7 @@
   },
   "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.125, "z2": 1 },
   "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-  "sidesolid":  { "all": "false" },
+  "sidesolid":  { "all": "false", "up": "true" },
   "sideopaque": { "all": "false" },
   "drawtype": "JSON",
   "lightAbsorption": 0

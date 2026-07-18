@@ -5,7 +5,9 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Util;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 using Dumbwaiter.Config;
 
 namespace Dumbwaiter
@@ -34,12 +36,26 @@ namespace Dumbwaiter
                 },
                 new WorldInteraction
                 {
+                    ActionLangCode = "dumbwaiter:blockhelp-send-cargo",
+                    MouseButton = EnumMouseButton.Right
+                },
+                new WorldInteraction
+                {
                     ActionLangCode = "dumbwaiter:blockhelp-label",
                     MouseButton = EnumMouseButton.Right,
                     HotKeyCode = "shift",
                     Itemstacks = writingStacks.Count > 0 ? writingStacks.ToArray() : null
                 }
             };
+        }
+
+        // The hoist frame's top is a valid resting place for cargo. Answering this
+        // directly (rather than relying on sidesolid JSON alone) satisfies every
+        // requires-solid-ground placement check, including CarryOn's.
+        public override bool CanAttachBlockAt(IBlockAccessor blockAccessor, Block block, BlockPos pos, BlockFacing blockFace, Cuboidi attachmentArea = null)
+        {
+            if (blockFace == BlockFacing.UP) return true;
+            return base.CanAttachBlockAt(blockAccessor, block, pos, blockFace, attachmentArea);
         }
 
         public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)
@@ -70,14 +86,10 @@ namespace Dumbwaiter
                     return true;
                 }
 
-                if (hotbarSlot?.Empty ?? true)
-                {
-                    if (world.Side == EnumAppSide.Server)
-                    {
-                        Msg(byPlayer as IServerPlayer, "dumbwaiter-label-needs-ink");
-                    }
-                    return true;
-                }
+                // Sneaking with anything else — or with empty hands — is not ours.
+                // Pass it through so block placement and CarryOn's empty-handed
+                // pickup/put-down keep working on and around the station.
+                return base.OnBlockInteractStart(world, byPlayer, blockSel);
             }
 
             if (world.Side != EnumAppSide.Server) return true;
@@ -94,12 +106,42 @@ namespace Dumbwaiter
             double now = world.ElapsedMilliseconds / 1000.0;
 
             var pos = byPlayer.Entity.Pos;
-            if ((int)Math.Floor(pos.X) != blockSel.Position.X ||
-                (int)Math.Floor(pos.Y) != blockSel.Position.Y ||
-                (int)Math.Floor(pos.Z) != blockSel.Position.Z)
+            bool onPlatform =
+                (int)Math.Floor(pos.X) == blockSel.Position.X &&
+                (int)Math.Floor(pos.Y) == blockSel.Position.Y &&
+                (int)Math.Floor(pos.Z) == blockSel.Position.Z;
+
+            // Not riding? Then the station can still haul cargo: a container block
+            // (chest, basket, vessel, ...) set on top of the hoist frame.
+            BlockPos cargoPos = null;
+            if (!onPlatform)
             {
-                Msg(serverPlayer, "dumbwaiter-not-on-platform");
-                return true;
+                var candidatePos = blockSel.Position.UpCopy();
+                if (world.BlockAccessor.GetBlockEntity(candidatePos) is not BlockEntityContainer)
+                {
+                    Msg(serverPlayer, "dumbwaiter-not-on-platform");
+                    return true;
+                }
+
+                // Multiblock furniture (trunks) spans two cells; moving just the
+                // principal half would leave a corrupt dummy behind.
+                var cargoBlock = world.BlockAccessor.GetBlock(candidatePos);
+                if (cargoBlock.Code.Path.Contains("trunk"))
+                {
+                    Msg(serverPlayer, "dumbwaiter-cargo-immovable");
+                    return true;
+                }
+
+                // Reinforcement (and padlocks, which ride on it) is stored by
+                // position — moving the block would strand it. Refuse instead.
+                var reinforcement = world.Api.ModLoader.GetModSystem<ModSystemBlockReinforcement>();
+                if (reinforcement?.IsReinforced(candidatePos) == true)
+                {
+                    Msg(serverPlayer, "dumbwaiter-cargo-reinforced");
+                    return true;
+                }
+
+                cargoPos = candidatePos;
             }
 
             if (!be.IsLinked)
@@ -146,7 +188,16 @@ namespace Dumbwaiter
 
             var aboveDest = be.PairedPos.UpCopy();
             var blockAbove = world.BlockAccessor.GetBlock(aboveDest);
-            if (blockAbove.CollisionBoxes != null && blockAbove.CollisionBoxes.Length > 0)
+            if (cargoPos != null)
+            {
+                // The container needs the whole cell above the paired station.
+                if (blockAbove.Replaceable < 6000)
+                {
+                    Msg(serverPlayer, "dumbwaiter-cargo-dest-blocked");
+                    return true;
+                }
+            }
+            else if (blockAbove.CollisionBoxes != null && blockAbove.CollisionBoxes.Length > 0)
             {
                 Msg(serverPlayer, "dumbwaiter-obstructed");
                 return true;
@@ -173,7 +224,8 @@ namespace Dumbwaiter
                     SourceX = blockSel.Position.X,
                     SourceY = blockSel.Position.Y,
                     SourceZ = blockSel.Position.Z,
-                    Volume = cfg.SoundVolume
+                    Volume = cfg.SoundVolume,
+                    SuppressFade = cargoPos != null
                 }, serverPlayer);
 
             var destination = be.PairedPos.ToVec3d().Add(0.5, 0.13, 0.5);
@@ -183,7 +235,11 @@ namespace Dumbwaiter
 
             world.Api.Event.RegisterCallback(_ =>
             {
-                if (byPlayer?.Entity?.Alive == true)
+                if (cargoPos != null)
+                {
+                    MoveCargo(world, cargoPos, pairedPos.UpCopy(), serverPlayer);
+                }
+                else if (byPlayer?.Entity?.Alive == true)
                 {
                     byPlayer.Entity.TeleportTo(destination);
                 }
@@ -209,16 +265,57 @@ namespace Dumbwaiter
             return true;
         }
 
+        // Relocate a container block (with its inventory) from the cell above one
+        // station to the cell above the other. The classic move-a-block-entity
+        // pattern: serialize the BE to a tree, retarget the position fields, remove
+        // the source block (no drops — SetBlock never calls OnBlockBroken), place
+        // the same block at the destination, restore the tree onto its fresh BE.
+        private static void MoveCargo(IWorldAccessor world, BlockPos from, BlockPos to, IServerPlayer player)
+        {
+            var block = world.BlockAccessor.GetBlock(from);
+            var be = world.BlockAccessor.GetBlockEntity(from);
+            var destBlock = world.BlockAccessor.GetBlock(to);
+
+            // Re-verify at departure time: the container may have been broken, or
+            // the destination cell filled, during the transition delay.
+            if (be is not BlockEntityContainer || destBlock.Replaceable < 6000)
+            {
+                Msg(player, "dumbwaiter-cargo-jammed");
+                return;
+            }
+
+            var tree = new TreeAttribute();
+            be.ToTreeAttributes(tree);
+            tree.SetInt("posx", to.X);
+            tree.SetInt("posy", to.Y);
+            tree.SetInt("posz", to.Z);
+
+            world.BlockAccessor.SetBlock(0, from);
+            world.BlockAccessor.SetBlock(block.BlockId, to);
+
+            var newBE = world.BlockAccessor.GetBlockEntity(to);
+            if (newBE != null)
+            {
+                newBE.FromTreeAttributes(tree, world);
+                newBE.MarkDirty(true);
+            }
+
+            Msg(player, "dumbwaiter-cargo-sent");
+        }
+
         // Scan the vertical column strictly between the two stations. A solid block
         // sitting in the shaft (e.g. someone walls it off, or builds across the gap)
         // jams the mechanism for both ends until it's cleared. The trip is essentially
-        // vertical, so we probe the column above the lower station.
+        // vertical, so we probe the column above the lower station. The cell directly
+        // above the lower station is excluded: it's the loading cell — it legitimately
+        // holds the payload when sending cargo up, and anything else sitting there is
+        // already caught by the destination clearance checks.
         private static bool ShaftBlocked(IWorldAccessor world, BlockPos a, BlockPos b)
         {
             BlockPos bottom = a.Y <= b.Y ? a : b;
             int topY = Math.Max(a.Y, b.Y);
             var probe = bottom.Copy();
-            for (int y = bottom.Y + 1; y < topY; y++)
+            for (int y = bottom.Y + 2; y < topY; y++)
             {
                 probe.Y = y;
                 var block = world.BlockAccessor.GetBlock(probe);

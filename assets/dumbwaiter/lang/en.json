@@ -13,7 +13,12 @@
   "dumbwaiter-too-far": "The other station is too far away.",
   "dumbwaiter-settling": "The dumbwaiter is still settling...",
   "dumbwaiter-in-use": "The dumbwaiter is already in motion.",
-  "dumbwaiter-not-on-platform": "Step onto the platform first.",
+  "dumbwaiter-not-on-platform": "Step onto the platform first, or set a container on top to send it.",
+  "dumbwaiter-cargo-sent": "The container rattles away to the other station.",
+  "dumbwaiter-cargo-immovable": "That container is too bulky for the dumbwaiter.",
+  "dumbwaiter-cargo-reinforced": "That container is locked or reinforced in place.",
+  "dumbwaiter-cargo-dest-blocked": "There's no room for the container at the other end.",
+  "dumbwaiter-cargo-jammed": "The dumbwaiter jammed — the container stayed where it was.",
   "dumbwaiter-broken-be": "This station's data was lost. Break and replace it.",
   "dumbwaiter-link-too-far": "These stations are too far apart to link.",
   "dumbwaiter-link-failed": "Could not link — is there a station at both ends?",
@@ -27,5 +32,6 @@
   "dumbwaiter-info-linked-named-below": "Linked to \"{0}\" — {1} blocks below",
   "dumbwaiter-info-linked-named-level": "Linked to \"{0}\" nearby",
   "blockhelp-operate": "Operate dumbwaiter",
+  "blockhelp-send-cargo": "Send container (set one on top)",
   "blockhelp-label": "Write label"
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 — 2026-07-18
+
+- **Cargo sends**: place a chest, basket or storage vessel on top of a linked station and right-click the station while standing beside it — the container is hauled to the cell above the paired station with its contents (and chest label) intact. The usual transition sounds play, without the screen fade.
+  - Refused for trunks (two-block furniture) and reinforced/locked containers; the destination cell must be clear, re-checked at departure so the send jams safely (container stays put) if conditions change mid-transition.
+- The station's top face is now solid, so containers that need ground support can be placed on the hoist frame.
+- Sneak + right-click on a station is only intercepted when holding a writing tool (label editing); empty-handed or other-item sneak clicks pass through, so CarryOn pickup/put-down and block placement against the station work.
+
 ## 0.2.0 — 2026-07-11
 
 First version published to the mod DB.

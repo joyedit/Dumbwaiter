@@ -1,6 +1,6 @@
 <h2>Dumbwaiter</h2>
 
-<p><strong>A medieval-style lift for moving between vertically-separated floors.</strong> Step onto a station, pull the lever, and ride a brief, atmospheric transition &mdash; chain rattle, pulley squeal, wood groan, and a fade &mdash; to its paired station above or below. Perfect for cliff-side bases, multi-floor towers, mineshafts, and deep cellars.</p>
+<p><strong>A medieval-style lift for moving between vertically-separated floors.</strong> Step onto a station, pull the lever, and ride a brief, atmospheric transition &mdash; chain rattle, pulley squeal, wood groan, and a fade &mdash; to its paired station above or below. Or load a chest, basket, or storage vessel onto the hoist and send your goods up or down without riding along. Perfect for cliff-side bases, multi-floor towers, mineshafts, and deep cellars.</p>
 
 <h3>How it works</h3>
 <p>Place a <strong>Dumbwaiter Station</strong> at each end of your shaft, link them with a <strong>Rope Link</strong>, and you have a working lift. Activating one station whisks you to the other through a short immersive sequence whose length scales with the distance traveled.</p>
@@ -34,6 +34,15 @@
 </ol>
 <p>Both ends now remember each other, and the link item is consumed.</p>
 
+<h3>Sending cargo (new in 0.3.0)</h3>
+<p>A true dumbwaiter hauls goods, not just people.</p>
+<ol>
+  <li><strong>Put a container on top of the station.</strong> Stand <em>beside</em> a linked station (not on the platform) and place a chest, basket, or storage vessel on top of the hoist frame &mdash; aim at the top of the frame and sneak + right-click to place it, exactly like placing on any other block. If you use <strong>CarryOn</strong>, you can carry a full vessel over on your shoulder and set it down on the frame the same way (sneak + right-click, empty hands). It can be full &mdash; contents come along.</li>
+  <li><strong>Send it.</strong> Still standing beside the station, right-click the station (no sneak). You'll hear the chain rattle and pulley squeal &mdash; at the end of it, the container is gone from your end and sitting on top of the station at the other end, with everything inside untouched. Chest labels survive too.</li>
+  <li><strong>Collect it at the far end.</strong> Break it loose, open it in place, or CarryOn it off the frame. The landing spot must be collected before the next delivery can arrive there.</li>
+</ol>
+<p><strong>Things that will stop a send:</strong> a blocked landing spot at the far end, a walled-off shaft, a trunk (too bulky), or a <strong>reinforced/locked</strong> container. If anything changes mid-trip &mdash; someone breaks the container or fills the landing spot &mdash; the mechanism jams safely and the container stays where it was. Nothing is ever lost or duplicated.</p>
+
 <h3>Labels</h3>
 <p>Sneak + right-click a station while holding an <strong>ink &amp; quill</strong> (reusable) or a piece of <strong>charcoal</strong> (consumed, with a chance of getting it back &mdash; same economy as vanilla labeled chests) to write a label, e.g. <em>"Cellar"</em> or <em>"Side Entrance"</em>. The label is shown prominently when you look at the station, and the other end of the link shows it by name &mdash; so you always know where the ride goes.</p>
 
@@ -43,7 +52,8 @@
   <li><strong>Max horizontal offset:</strong> 4 blocks (allows slightly angled shafts)</li>
   <li><strong>Transition time:</strong> ~1&ndash;3 seconds, scaling with trip distance</li>
   <li><strong>Cooldown after arrival:</strong> ~0.5&ndash;2 seconds, scaling with trip distance</li>
-  <li>You must be <strong>standing on the platform</strong> to operate it.</li>
+  <li>To ride, you must be <strong>standing on the platform</strong>; to send cargo, stand beside the station with a container on top.</li>
+  <li>One container per trip; a delivered container must be collected before the next arrival at that end.</li>
   <li>The destination must be <strong>loaded and unobstructed</strong> &mdash; the lift will not drop you into a wall.</li>
   <li>The <strong>shaft column between the stations must be clear</strong> &mdash; walling it off jams the mechanism until cleared.</li>
   <li>One rider at a time per station (prevents double-activation).</li>

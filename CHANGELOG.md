@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 — 2026-07-23
+
+- Compatibility release for Vintage Story 1.22.5. Rebuilt against the 1.22.5
+  assemblies; no code changes.
+
 ## 0.3.0 — 2026-07-18
 
 - **Cargo sends**: place a chest, basket or storage vessel on top of a linked station and right-click the station while standing beside it — the container is hauled to the cell above the paired station with its contents (and chest label) intact. The usual transition sounds play, without the screen fade.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 — 2026-07-28
+
+- Raised the default `MaxVerticalDistance` from 192 to 250 blocks. Existing
+  config files keep their stored value; delete the entry (or the file) to pick
+  up the new default.
+
 ## 0.3.1 — 2026-07-23
 
 - Compatibility release for Vintage Story 1.22.5. Rebuilt against the 1.22.5

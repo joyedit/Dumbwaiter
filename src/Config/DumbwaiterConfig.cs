@@ -5,7 +5,7 @@ namespace Dumbwaiter.Config
 {
     public class DumbwaiterConfig
     {
-        public int MaxVerticalDistance { get; set; } = 192;
+        public int MaxVerticalDistance { get; set; } = 250;
         public int MaxHorizontalOffset { get; set; } = 4;
         // TransitionDuration is the time for a maximum-distance trip. Shorter trips
         // scale down linearly toward MinTransitionDuration, which is the floor needed

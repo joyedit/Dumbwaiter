@@ -17,7 +17,7 @@ The mechanic is a **teleport disguised as a lift** — a detailed block model, s
 ## Using in-game
 
 1. **Craft two stations** (3×3): 4× any planks in the corners (2 each), 2× metal nails & strips on the left/right middle, 1× plank slab in the center.
-2. **Place them** at the two ends of your shaft — up to 192 blocks vertical, 4 blocks horizontal offset (configurable). Keep the column between them clear.
+2. **Place them** at the two ends of your shaft — up to 250 blocks vertical, 4 blocks horizontal offset (configurable). Keep the column between them clear.
 3. **Craft a Dumbwaiter Rope Link** (1×2 vertical): 2× rusty gear over 12× rope.
 4. Right-click the first station with the link — *anchor set* (the anchor coordinates show in the item tooltip). Right-click the second — *linked*. The link is consumed.
 5. **Ride it:** stand on a station and right-click. After a fade-and-sound transition scaled to the distance, you arrive at the other end. Each end then needs a moment to settle before the next trip.
@@ -32,7 +32,7 @@ On first run, `~/.config/VintagestoryData/ModConfig/dumbwaiter.json` is written 
 
 | Key | Default | Effect |
 | --- | --- | --- |
-| `MaxVerticalDistance` | 192 | Max vertical blocks between paired stations |
+| `MaxVerticalDistance` | 250 | Max vertical blocks between paired stations |
 | `MaxHorizontalOffset` | 4 | Max horizontal misalignment when linking |
 | `TransitionDuration` | 3.0 | Transition time (seconds) for a maximum-distance trip |
 | `MinTransitionDuration` | 1.0 | Transition floor for the shortest trips |

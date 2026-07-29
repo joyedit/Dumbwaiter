@@ -19,13 +19,33 @@ namespace Dumbwaiter
             bool firstEvent,
             ref EnumHandHandling handling)
         {
-            if (!firstEvent || blockSel == null)
+            if (!firstEvent)
             {
                 base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handling);
                 return;
             }
 
             var world = byEntity.World;
+
+            // Sneak + right-click (anywhere) discards a set anchor
+            if (byEntity.Controls.Sneak && GetAnchor(slot) != null)
+            {
+                handling = EnumHandHandling.PreventDefault;
+                if (world.Side == EnumAppSide.Server)
+                {
+                    ClearAnchor(slot);
+                    var p = (byEntity as EntityPlayer)?.Player as IServerPlayer;
+                    if (p != null) SendMsg(p, Lang.Get("dumbwaiter:dumbwaiter-anchor-cleared"));
+                }
+                return;
+            }
+
+            if (blockSel == null)
+            {
+                base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handling);
+                return;
+            }
+
             var be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BlockEntityDumbwaiterStation;
             if (be == null)
             {
@@ -40,20 +60,13 @@ namespace Dumbwaiter
             var player = (byEntity as EntityPlayer)?.Player as IServerPlayer;
             if (player == null) return;
 
-            var attrs = slot.Itemstack.Attributes;
-            BlockPos anchor = null;
-            if (attrs.HasAttribute("anchorX"))
-            {
-                anchor = new BlockPos(
-                    attrs.GetInt("anchorX"),
-                    attrs.GetInt("anchorY"),
-                    attrs.GetInt("anchorZ"));
-            }
+            BlockPos anchor = GetAnchor(slot);
 
             if (anchor == null || anchor.Equals(blockSel.Position))
             {
                 SetAnchor(slot, blockSel.Position);
-                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-anchor-set"));
+                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-anchor-set",
+                    blockSel.Position.X, blockSel.Position.Y, blockSel.Position.Z));
                 return;
             }
 
@@ -61,7 +74,8 @@ namespace Dumbwaiter
             if (anchorBE == null)
             {
                 ClearAnchor(slot);
-                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-link-failed"));
+                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-link-failed",
+                    anchor.X, anchor.Y, anchor.Z));
                 return;
             }
 
@@ -70,9 +84,16 @@ namespace Dumbwaiter
             int dx = Math.Abs(blockSel.Position.X - anchor.X);
             int dz = Math.Abs(blockSel.Position.Z - anchor.Z);
 
-            if (dy > cfg.MaxVerticalDistance || Math.Max(dx, dz) > cfg.MaxHorizontalOffset)
+            if (dy > cfg.MaxVerticalDistance)
             {
-                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-link-too-far"));
+                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-link-too-far-vertical",
+                    dy, cfg.MaxVerticalDistance, anchor.X, anchor.Y, anchor.Z));
+                return;
+            }
+            if (Math.Max(dx, dz) > cfg.MaxHorizontalOffset)
+            {
+                SendMsg(player, Lang.Get("dumbwaiter:dumbwaiter-link-too-far-horizontal",
+                    Math.Max(dx, dz), cfg.MaxHorizontalOffset, anchor.X, anchor.Y, anchor.Z));
                 return;
             }
 
@@ -115,6 +136,16 @@ namespace Dumbwaiter
                     attrs.GetInt("anchorY"),
                     attrs.GetInt("anchorZ")));
             }
+        }
+
+        private static BlockPos GetAnchor(ItemSlot slot)
+        {
+            var attrs = slot.Itemstack?.Attributes;
+            if (attrs == null || !attrs.HasAttribute("anchorX")) return null;
+            return new BlockPos(
+                attrs.GetInt("anchorX"),
+                attrs.GetInt("anchorY"),
+                attrs.GetInt("anchorZ"));
         }
 
         private static void SetAnchor(ItemSlot slot, BlockPos pos)

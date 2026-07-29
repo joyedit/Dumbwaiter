@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.3 — 2026-07-29
+
+- Clearer link failures: separate messages for exceeding the vertical distance
+  limit and the horizontal offset limit, each stating the actual distance, the
+  limit, and the anchor's coordinates — so a stale anchor (e.g. left over from
+  a previous install) is immediately visible.
+- The "anchor set" message now includes the anchor's coordinates.
+- Sneak + right-click with the rope link clears a set anchor, so a mis-clicked
+  or stale anchor no longer requires crafting a new link.
+- If the anchor station no longer exists, the failure message now says so and
+  notes the anchor was cleared.
+
 ## 0.3.2 — 2026-07-28
 
 - Raised the default `MaxVerticalDistance` from 192 to 250 blocks. Existing

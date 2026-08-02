@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.5 — 2026-08-02
+
+- Fixed linking being impossible since 0.3.3: the sneak + right-click
+  "clear anchor" gesture fired before the link logic, so the second station
+  click always cleared the anchor instead of completing the link. Clearing
+  now only happens when sneak + right-clicking something that is *not* a
+  dumbwaiter station; sneak + right-clicking a station sets the anchor or
+  completes the link.
+- The "anchor set" message now explains both gestures.
+
 ## 0.3.4 — 2026-07-30
 
 - Fixed small player models (e.g. scaled-down races via Player Model lib, like

@@ -27,28 +27,28 @@ namespace Dumbwaiter
 
             var world = byEntity.World;
 
-            // Sneak + right-click (anywhere) discards a set anchor
-            if (byEntity.Controls.Sneak && GetAnchor(slot) != null)
-            {
-                handling = EnumHandHandling.PreventDefault;
-                if (world.Side == EnumAppSide.Server)
-                {
-                    ClearAnchor(slot);
-                    var p = (byEntity as EntityPlayer)?.Player as IServerPlayer;
-                    if (p != null) SendMsg(p, Lang.Get("dumbwaiter:dumbwaiter-anchor-cleared"));
-                }
-                return;
-            }
+            var be = blockSel == null
+                ? null
+                : world.BlockAccessor.GetBlockEntity(blockSel.Position) as BlockEntityDumbwaiterStation;
 
-            if (blockSel == null)
-            {
-                base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handling);
-                return;
-            }
-
-            var be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BlockEntityDumbwaiterStation;
+            // Stations only ever see sneak + right-click (plain clicks are consumed
+            // by the block's own interact handler), so the anchor-discard gesture
+            // must not trigger when aiming at one — else the second click of a
+            // link always clears instead of linking.
             if (be == null)
             {
+                if (byEntity.Controls.Sneak && GetAnchor(slot) != null)
+                {
+                    handling = EnumHandHandling.PreventDefault;
+                    if (world.Side == EnumAppSide.Server)
+                    {
+                        ClearAnchor(slot);
+                        var p = (byEntity as EntityPlayer)?.Player as IServerPlayer;
+                        if (p != null) SendMsg(p, Lang.Get("dumbwaiter:dumbwaiter-anchor-cleared"));
+                    }
+                    return;
+                }
+
                 base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handling);
                 return;
             }

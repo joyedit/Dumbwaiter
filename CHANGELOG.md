@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.4 — 2026-07-30
+
+- Fixed small player models (e.g. scaled-down races via Player Model lib, like
+  the Avali) being unable to operate a station while standing on it. The
+  station's selection box was a full cube, so a small rider's eye ended up
+  *inside* it and the picking ray could never target the block — right-clicks
+  silently went to whatever was behind it. The selection boxes now mirror the
+  actual frame (platform, corner posts, top beams), leaving the rider space
+  hollow.
+
 ## 0.3.3 — 2026-07-29
 
 - Clearer link failures: separate messages for exceeding the vertical distance

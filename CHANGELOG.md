@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.6 — 2026-08-22
+
+- Compatibility release for Vintage Story 1.22.7. Rebuilt against the 1.22.7
+  assemblies; no code changes.
+
 ## 0.3.5 — 2026-08-02
 
 - Fixed linking being impossible since 0.3.3: the sneak + right-click

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.7 — 2026-08-29
+
+- Wall dressing no longer jams the lift. Plaques, paintings, signs, banners,
+  wall lanterns, torches and ladders hug one face of a cell and leave the
+  middle wide open, but they still own the block position, so the shaft (and
+  the destination cell) read as walled off. Obstruction is now judged on
+  geometry: only something reaching into the central rider column blocks a
+  trip. Slabs, fence posts and full blocks still jam it; flat floor coverings
+  like rugs are stepped over. State-dependent blocks (an open door, a lowered
+  gate) are judged as they actually stand rather than by their default shape.
+
 ## 0.3.6 — 2026-08-22
 
 - Compatibility release for Vintage Story 1.22.7. Rebuilt against the 1.22.7

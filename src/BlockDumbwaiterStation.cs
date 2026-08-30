@@ -197,7 +197,7 @@ namespace Dumbwaiter
                     return true;
                 }
             }
-            else if (blockAbove.CollisionBoxes != null && blockAbove.CollisionBoxes.Length > 0)
+            else if (ObstructsRider(world, aboveDest))
             {
                 Msg(serverPlayer, "dumbwaiter-obstructed");
                 return true;
@@ -303,11 +303,12 @@ namespace Dumbwaiter
             Msg(player, "dumbwaiter-cargo-sent");
         }
 
-        // Scan the vertical column strictly between the two stations. A solid block
-        // sitting in the shaft (e.g. someone walls it off, or builds across the gap)
-        // jams the mechanism for both ends until it's cleared. The trip is essentially
-        // vertical, so we probe the column above the lower station. The cell directly
-        // above the lower station is excluded: it's the loading cell — it legitimately
+        // Scan the vertical column strictly between the two stations. A block standing
+        // in the shaft (e.g. someone walls it off, or builds across the gap) jams the
+        // mechanism for both ends until it's cleared — see ObstructsRider for what
+        // counts as standing in the way and what is merely dressing on the wall.
+        // The trip is essentially vertical, so we probe the column above the lower
+        // station. The cell directly above the lower station is excluded: it's the loading cell — it legitimately
         // holds the payload when sending cargo up, and anything else sitting there is
         // already caught by the destination clearance checks.
         private static bool ShaftBlocked(IWorldAccessor world, BlockPos a, BlockPos b)
@@ -318,12 +319,48 @@ namespace Dumbwaiter
             for (int y = bottom.Y + 2; y < topY; y++)
             {
                 probe.Y = y;
-                var block = world.BlockAccessor.GetBlock(probe);
-                if (block.CollisionBoxes != null && block.CollisionBoxes.Length > 0)
+                if (ObstructsRider(world, probe))
                 {
                     return true;
                 }
             }
+            return false;
+        }
+
+        // Half-width of the column the rider actually travels through, measured from
+        // the middle of the cell. Roughly the player's own width, with a little slack.
+        private const float ShaftRadius = 0.35f;
+
+        // Anything lying this flat underfoot (rugs, floor plates) is stepped over
+        // rather than caught on.
+        private const float FloorDressingHeight = 0.1f;
+
+        // Does whatever occupies this cell actually stand in the rider's way?
+        //
+        // The old test — "has any collision box at all" — jammed the lift on block
+        // dressing: a plaque, painting, sign, banner, wall lantern or ladder hugs one
+        // face of the cell and leaves the middle wide open, but it still owns the
+        // block position, so the shaft read as walled off. Test the geometry instead:
+        // only a box reaching into the central column blocks the trip. A slab, fence
+        // post or full block still does; a 2cm plaque on the wall does not.
+        //
+        // GetCollisionBoxes rather than the static CollisionBoxes array, so state-
+        // dependent blocks (an open door, a lowered gate) are judged as they stand.
+        private static bool ObstructsRider(IWorldAccessor world, BlockPos pos)
+        {
+            var block = world.BlockAccessor.GetBlock(pos);
+            var boxes = block.GetCollisionBoxes(world.BlockAccessor, pos);
+            if (boxes == null) return false;
+
+            foreach (var box in boxes)
+            {
+                if (box == null) continue;
+                if (box.Y2 <= FloorDressingHeight) continue;
+                if (box.X2 <= 0.5f - ShaftRadius || box.X1 >= 0.5f + ShaftRadius) continue;
+                if (box.Z2 <= 0.5f - ShaftRadius || box.Z1 >= 0.5f + ShaftRadius) continue;
+                return true;
+            }
+
             return false;
         }
 

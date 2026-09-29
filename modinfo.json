@@ -2,6 +2,7 @@
   "type": "code",
   "modid": "dumbwaiter",
   "name": "Dumbwaiter",
+  "website": "https://github.com/joyedit/Dumbwaiter",
   "authors": ["Feyd"],
   "iconPath": "modicon.png",
   "description": "Medieval-style dumbwaiter lift. Move between vertically-separated stations via an immersive transition (sound, fade, teleport). Send chests, baskets and vessels between stations without riding along.",
